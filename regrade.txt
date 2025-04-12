@@ -1,0 +1,3 @@
+Q1: Dear TA, I believe I should get more points because I correctly used recursion as required.
+Q2: Dear TA, the deduction seems to be a mistake. Please check my base case handling.
+Q3:Dear TA, my answer aligns with the rubric. Kindly re-evaluate.

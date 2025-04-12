@@ -10,7 +10,7 @@ with sync_playwright() as p:
     page = context.new_page()
 
     # Open the submission page
-    page.goto("https://www.gradescope.com/courses/596073/assignments/3636941/submissions/211665410")
+    page.goto("https://www.gradescope.com/courses/1011178/assignments/5997159/submissions/320675452#Question_1-rubric")
 
     # Wait and get the href from the "Download Graded Copy" button
     page.wait_for_selector("a:has-text('Download Graded Copy')", timeout=10000)

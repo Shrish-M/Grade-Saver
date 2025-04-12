@@ -1,4 +1,4 @@
-function openQuestion(questionId) {
+function openQuestion(questionId, regradeText) {
   chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
     if (tabs.length === 0) {
       console.error("No active tab found");
@@ -15,17 +15,18 @@ function openQuestion(questionId) {
     
     // Update status
     document.getElementById("status").innerHTML = 
-      `<p>Attempting to open Question ${questionId}...</p>`;
+      `<p>Opening Question ${questionId} and requesting regrade...</p>`;
     
     // Send message to content script
     chrome.tabs.sendMessage(tabs[0].id, {
       action: "openQuestion",
       question: questionId,
+      regradeText: regradeText
     }, response => {
       if (chrome.runtime.lastError) {
         console.error("Error sending message:", chrome.runtime.lastError);
         document.getElementById("status").innerHTML = 
-          `<p style='color: red'>Error: Could not communicate with page. Make sure you're on a Gradescope assignment page.</p>`;
+          `<p style='color: red'>Error: Could not communicate with page. Refresh the page and try again.</p>`;
       } else if (response && response.success) {
         document.getElementById("status").innerHTML = 
           `<p style='color: green'>${response.message}</p>`;
@@ -37,6 +38,18 @@ function openQuestion(questionId) {
   });
 }
 
+// Extract regrade text for a specific question from the full text
+function extractRegradeText(fullText, questionNumber) {
+  // Look for the text after "Q#:" or "Question #:"
+  const pattern = new RegExp(`(?:Q|Question\\s*)${questionNumber}:\\s*([\\s\\S]*?)(?=\\s*(?:Q|Question\\s*)\\d+:|$)`, 'i');
+  const match = fullText.match(pattern);
+  
+  if (match && match[1]) {
+    return match[1].trim();
+  }
+  return "";
+}
+
 // Load and parse the regrade suggestions file
 document.addEventListener('DOMContentLoaded', function() {
   // Add a status div for feedback
@@ -44,23 +57,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const statusDiv = document.createElement("div");
   statusDiv.id = "status";
   container.parentNode.insertBefore(statusDiv, container.nextSibling);
-  
-  // Add direct question opener form
-  const form = document.createElement("div");
-  form.innerHTML = `
-    <p>Quick open question number:</p>
-    <input type="number" id="questionInput" min="1" style="width: 60px">
-    <button id="openButton">Open</button>
-  `;
-  container.parentNode.insertBefore(form, container);
-  
-  // Add event listener for the button
-  document.getElementById("openButton").addEventListener("click", function() {
-    const questionNum = document.getElementById("questionInput").value;
-    if (questionNum) {
-      openQuestion(questionNum);
-    }
-  });
   
   // Load suggestions if regrade.txt exists
   fetch(chrome.runtime.getURL("regrade.txt"))
@@ -71,6 +67,8 @@ document.addEventListener('DOMContentLoaded', function() {
       return response.text();
     })
     .then(text => {
+      const fullText = text; // Store the full text to extract regrade details later
+      
       // Look for both Q1: and Question 1: formats
       const regex = /(?:Q|Question\s*)(\d+):/g;
       let match;
@@ -87,8 +85,12 @@ document.addEventListener('DOMContentLoaded', function() {
         link.href = "#";
         link.style.color = "blue";
         link.style.fontWeight = "bold";
+        
+        // Get the regrade text for this question
+        const regradeText = extractRegradeText(fullText, questionNum);
+        
         link.onclick = function() {
-          openQuestion(questionNum);
+          openQuestion(questionNum, regradeText);
           return false;  // Prevent default action
         };
         
@@ -103,7 +105,6 @@ document.addEventListener('DOMContentLoaded', function() {
     .catch(error => {
       console.error("Error loading suggestions:", error);
       container.innerHTML = 
-        `<p>No regrade.txt file found or error loading suggestions.</p>
-         <p>You can still use the quick open feature above.</p>`;
+        `<p>No regrade.txt file found or error loading suggestions. Create a regrade.txt file in the extension directory with your regrade suggestions.</p>`;
     });
 });

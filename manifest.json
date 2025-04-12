@@ -1,0 +1,27 @@
+{
+    "name": "Gradescope Regrade Helper",
+    "description": "Easily submit regrade requests on Gradescope",
+    "version": "6.0",
+    "manifest_version": 3,
+    "permissions": [
+      "activeTab", "storage", "tabs", "scripting"
+    ],
+    "host_permissions": [
+      "*://www.gradescope.com/*"
+    ],
+    "action": {
+      "default_popup": "popup.html"
+    },
+    "content_scripts": [
+      {
+        "js": ["content.js"],
+        "matches": ["*://www.gradescope.com/*"]
+      }
+    ],
+    "web_accessible_resources": [
+    {
+      "resources": ["regrade.txt"],
+      "matches": ["*://www.gradescope.com/*"]
+    }
+  ]
+  }

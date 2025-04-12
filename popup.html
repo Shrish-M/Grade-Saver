@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gradescope Regrade Helper</title>
+  <style>
+    body {
+      width: 350px;
+      padding: 15px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+    }
+    
+    h3 {
+      margin-top: 0;
+      color: #3366cc;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 8px;
+    }
+    
+    .suggestions {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      max-height: 350px;
+      margin-top: 15px;
+      background: #f9f9f9;
+    }
+    
+    a {
+      color: #0066cc;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    
+    a:hover {
+      text-decoration: underline;
+      color: #004499;
+    }
+    
+    #status {
+      margin: 10px 0;
+      padding: 8px;
+      border-radius: 4px;
+      background: #f0f0f0;
+      min-height: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h3>Gradescope Regrade Helper</h3>
+  <div id="status"></div>
+  <div class="suggestions" id="suggestionsBox"></div>
+  <script src="popup.js"></script>
+</body>
+</html>

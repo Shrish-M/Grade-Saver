@@ -1,7 +1,7 @@
 {
     "name": "Gradescope Regrade Helper",
     "description": "Easily submit regrade requests on Gradescope",
-    "version": "4.0",
+    "version": "6.0",
     "manifest_version": 3,
     "permissions": [
       "activeTab", "storage", "tabs", "scripting"

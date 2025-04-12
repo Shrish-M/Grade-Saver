@@ -5,6 +5,10 @@ import pytesseract
 #image - extract image hardcoded for now
 
 
+def show_image(window_name, image):
+    cv2.imshow(window_name, image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 
 #clean - reduce noise, object detection (annotations), maybe OCR if applicable
@@ -17,46 +21,39 @@ if img is None:
 
 window_name = 'My Image Display'
 
-cv2.imshow(window_name, resized_img)
-cv2.waitKey(0)
-
-
+show_image(window_name, resized_img)
 
 img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-resized_img = cv2.resize(img_gray, (400, 600), interpolation=cv2.INTER_AREA)
-
-
-cv2.imshow(window_name, resized_img)
-cv2.waitKey(0)
-
-kernel = np.ones((3,3),np.uint8)
-denoised = cv2.GaussianBlur(img_gray, (1,1), 0)
-
-resized_img = cv2.resize(denoised, (400, 600), interpolation=cv2.INTER_AREA)
-cv2.imshow(window_name, resized_img)
-cv2.waitKey(0)
-
-
-_, thresh = cv2.threshold(denoised, 245, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-resized_img = cv2.resize(thresh, (400, 600), interpolation=cv2.INTER_AREA)
-cv2.imshow(window_name, resized_img)
-cv2.waitKey(0)
-
 _, thresh = cv2.threshold(img_gray, 125, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 resized_img = cv2.resize(thresh, (400, 600), interpolation=cv2.INTER_AREA)
-cv2.imshow(window_name, resized_img)
-cv2.waitKey(0)
+show_image("Gray", resized_img)
 
-_, thresh = cv2.threshold(img_gray, 125, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+
+clahe = cv2.createCLAHE(clipLimit=0.1, tileGridSize=(14, 14)) #larger tiles = more global transformation, low clipLimit reduces unecessary noise
+enhanced = clahe.apply(img_gray)
+
 resized_img = cv2.resize(thresh, (400, 600), interpolation=cv2.INTER_AREA)
-cv2.imshow(window_name, resized_img)
-cv2.waitKey(0)
+show_image("Enhanced", resized_img)
 
-cv2.destroyAllWindows()
+# Assume 'gray' is your grayscale image.
+adaptive_thresh = cv2.adaptiveThreshold(
+    enhanced,              # Source image (grayscale)
+    255,               # Maximum value assigned to pixel values exceeding the threshold
+    cv2.ADAPTIVE_THRESH_GAUSSIAN_C,  # Adaptive method using a weighted sum of neighborhood values
+    cv2.THRESH_BINARY, # Threshold type (binary: if pixel value > threshold -> maxValue, else 0)
+    21,                # blockSize: Size of the neighborhood area (must be an odd number), larger sizes help smoothen
+    2                  # Constant (C) subtracted from the computed mean or weighted sum
+)
 
-text = pytesseract.image_to_string(denoised)  # skip threshold entirely
-print(text)
+resized_img = cv2.resize(adaptive_thresh, (400, 600), interpolation=cv2.INTER_AREA)
+show_image(window_name, resized_img)
+
+
+
+
+#text
 #compare rubric
 
 #call function to get rubric and points deductions

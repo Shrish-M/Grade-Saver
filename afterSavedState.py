@@ -18,14 +18,15 @@ with sync_playwright() as p:
     for idx, toggle in enumerate(toggles):
         try:
             toggle.click()
-            time.sleep(1)  # Allow rubric to load
+            time.sleep(1)  # Wait for rubric items to load
 
             rubric_items = page.query_selector_all('.submissionOutlineRubricItem')
             applied_rubrics = []
 
             for item in rubric_items:
                 sr_only = item.query_selector('span.sr-only')
-                if sr_only and "applied rubric item" in sr_only.inner_text().lower():
+                if not sr_only or "unapplied rubric item" not in sr_only.inner_text().lower():
+                    # ✅ This is an applied rubric
                     points_el = item.query_selector('[aria-label]')
                     points = points_el.get_attribute('aria-label').strip() if points_el else "No points info"
 
@@ -46,8 +47,8 @@ with sync_playwright() as p:
 
     browser.close()
 
-    # ✅ Display output
+    # ✅ Display applied rubrics only
     for q, rubrics in rubric_by_question.items():
-        print(f"\n🔸 {q}:")
+        print(f"\n {q}:")
         for i, r in enumerate(rubrics):
-            print(f"  ✅ Rubric {i+1}: {r['points']} — {r['comment']}")
+            print(f" Rubric {i+1}: {r['points']} — {r['comment']}")

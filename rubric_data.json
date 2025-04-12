@@ -1,0 +1,142 @@
+{
+    "Question 21": {
+        "main": [
+            {
+                "points": "\u2212 0.5 points",
+                "comment": "Grading comment:Incorrect or missing implementation of get_state()"
+            },
+            {
+                "points": "\u2212 0.5 points",
+                "comment": "Grading comment:Incorrect or missing implementation of get_size()"
+            },
+            {
+                "points": "\u2212 2 points",
+                "comment": "Grading comment:Incorrect or missing outer loop through numOsChunks"
+            },
+            {
+                "points": "\u2212 2 points",
+                "comment": "Grading comment:Incorrect or missing inner logic to verify that the header is not a fencepost"
+            }
+        ],
+        "sub": {}
+    },
+    "Question 22": {
+        "main": [
+            {
+                "points": "\u2212 1 point",
+                "comment": "Grading comment:No #!/bin/bash at the beginning"
+            },
+            {
+                "points": "\u2212 1 point",
+                "comment": "Grading comment:Does not get arguments correctly"
+            },
+            {
+                "points": "\u2212 1 point",
+                "comment": "Did not print each zombie process"
+            }
+        ],
+        "sub": {}
+    },
+    "Question 23": {
+        "main": [
+            {
+                "points": "\u2212 0.5 points",
+                "comment": "Grading comment:Implementation of set_state helper function"
+            },
+            {
+                "points": "\u2212 0.5 points",
+                "comment": "Grading comment:Implementation of set_size helper function"
+            },
+            {
+                "points": "\u2212 0.5 points",
+                "comment": "Grading comment:Implementation of get_header_from_offset helper function"
+            },
+            {
+                "points": "\u2212 0.5 points",
+                "comment": "Grading comment:Implementation of initialize_fencepost helper function"
+            },
+            {
+                "points": "\u2212 1 point",
+                "comment": "Grading comment:Implementation of insert_os_chunk helper function"
+            },
+            {
+                "points": "\u2212 1 point",
+                "comment": "Grading comment:Did not get the header for the new block at the correct memory location"
+            },
+            {
+                "points": "\u2212 1 point",
+                "comment": "Grading comment:Did not set the header to the correct state (UNALLOCATED)"
+            },
+            {
+                "points": "\u2212 1 point",
+                "comment": "Grading comment:Did not set the header to the correct size (arenaSize - 2 * ALLOC_HEADER_SIZE) (in case of no coalesce)"
+            },
+            {
+                "points": "\u2212 1 point",
+                "comment": "Grading comment:Did not set the left_size of the header to ALLOC_HEADER_SIZE (in case of no coalesce)"
+            },
+            {
+                "points": "\u2212 1 point",
+                "comment": "Grading comment:In the adjacent case, does not set the size of the previous fencepost and/or the unallocated block to the left of the previous fencepost correctly"
+            },
+            {
+                "points": "\u2212 1 point",
+                "comment": "Grading comment:In the adjacent case, does not update the left_size of the right fencepost to the combined chunk correctly"
+            },
+            {
+                "points": "\u2212 1 point",
+                "comment": "Grading comment:In the adjacent unallocated case, does not remove the unallocated block left of the last fencepost from the freelist"
+            },
+            {
+                "points": "\u2212 1 point",
+                "comment": "Grading comment:In the non-adjacent case, does not call insert_os_chunk on the new chunk"
+            },
+            {
+                "points": "\u2212 1 point",
+                "comment": "Grading comment:Does not correctly update lastFencePost to the right fencepost of the new chunk"
+            },
+            {
+                "points": "\u2212 4 points",
+                "comment": "Grading comment:Missing one of the two adjacent node cases."
+            }
+        ],
+        "sub": {}
+    },
+    "Question 24": {
+        "main": [
+            {
+                "points": "\u2212 0.5 points",
+                "comment": "Grading comment:Open input file"
+            },
+            {
+                "points": "\u2212 0.5 points",
+                "comment": "Grading comment:Open error file"
+            },
+            {
+                "points": "\u2212 1 point",
+                "comment": "Grading comment:Incorrect pipes"
+            },
+            {
+                "points": "\u2212 2 points",
+                "comment": "Grading comment:Redirect stderr to error file"
+            },
+            {
+                "points": "\u2212 1 point",
+                "comment": "Grading comment:In children: Redirect stdin to input file for arg1 or read end of pipe for arg2"
+            },
+            {
+                "points": "\u2212 2 points",
+                "comment": "Grading comment:did not close fds in parent right"
+            },
+            {
+                "points": "\u2212 1 point",
+                "comment": "Grading comment:No waitpid"
+            },
+            {
+                "points": "\u2212 2 points",
+                "comment": "Grading comment:missing/incorrect dup2 in parent"
+            }
+        ],
+        "sub": {}
+    }
+}

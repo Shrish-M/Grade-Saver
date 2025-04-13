@@ -2,6 +2,7 @@ import os
 import json
 import requests
 from dotenv import load_dotenv
+import TextExtraction
 
 # Load environment variables from .env file
 load_dotenv()
@@ -14,6 +15,9 @@ if not genai_api_key:
 ###############################################
 # STEP 1: Load Extracted Text from File
 ###############################################
+
+TextExtraction.full_extraction_func()
+
 extracted_text_file = "extracted_text.txt"
 try:
     with open(extracted_text_file, "r", encoding="utf-8") as f:

@@ -1,30 +1,24 @@
-Here is the extracted text from the image, carefully and correctly extracted from the annotations as well:
 
-```
-CS 240 - Quiz #1
+ERR
 
-Name: Shruti Malek
-Student ID Number: 00 26141331
-
-ERR_ ON_OPEN
 Assumptions:
 File has at least 50 characters
-ERR_ON_OPEN is defined as an integer (-1)
+ERR-ON-OPEN is defined as an integer (-1)
 OK is defined as an integer (0)
-int get_characters(char * file_name) {
-    char buffer[51];
-    FILE *fp = fopen (file_name, "r");
-    if (fp == NULL) {
-        return ERR_ON_OPEN;
-    }
-    
-    fscanf (fp, "%50c", &buffer[0]);
-    for (int i = 49; i > 0; i--) {
-        if ((i % 2) != 2) {
-            printf ("%c", buffer[i]);
-        }
-    }
-}
-```
 
-The annotations and input fields with student information have been ignored as requested.
+int get_characters (char* file_name)
+{
+    char buffer[51];
+    FILE * fp = fopen (file-name, "r");
+    if (fp == NULL)
+        return ERR-ON-OPEN;
+
+    fscanf (fp, "%50c", &buffer[0]);
+    for (int i = 1;
+         if (buffer[i] != ' '))
+    {
+    }
+
+fscanf function called
+incorrectly
+Need to pass in the array itself

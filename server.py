@@ -12,11 +12,12 @@ def run_scraper():
     data = request.json
     stored_url = data.get("url")
     # threading.Thread(target=webScrape.run_main, args=(stored_url,)).start()
-    result = webScrape.run_main(stored_url)  # Make this return rubric_by_question
+    result, regrade_request = webScrape.run_main(stored_url)  # Make this return rubric_by_question
 
     return jsonify({
         "status": "success",
-        "rubrics": result  # Dictionary expected by the extension
+        "rubrics": result,  # Dictionary expected by the extension
+        "regrade-request": regrade_request
     })
     # return jsonify({"status": "started"})
 

@@ -5,6 +5,7 @@ import re
 from bs4 import BeautifulSoup
 import json
 import fitz
+import testPromptLlama
 
 SAVE_DIR = "submission_pdfs"
 TRIM_DIR = "trimmed_pdfs"
@@ -211,7 +212,8 @@ def run_main(page_url):
     output_filename = "rubric_data.json"
     with open(output_filename, "w", encoding="utf-8") as f:
         json.dump(rubric_by_question, f, indent=4)
-    return rubric_by_question
+    regrade_request = testPromptLlama.return_response()
+    return rubric_by_question, regrade_request
 
 # function to print nested structure (for debugging)
 def printRubrics():

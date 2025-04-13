@@ -10,7 +10,8 @@
       "*://www.gradescope.com/*"
     ],
     "action": {
-      "default_popup": "popup.html"
+      "default_popup": "popup.html",
+      "default_icon": "GS.png"
     },
     "content_scripts": [
       {

@@ -1,4 +1,4 @@
-// popup.js (revised: displays individual rubric entries with regrade buttons)
+// popup.js (revised: uses server-provided regrade request text)
 document.addEventListener('DOMContentLoaded', function () {
   const container = document.getElementById("suggestionsBox");
   const statusDiv = document.getElementById("status");
@@ -44,12 +44,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
           container.innerHTML = "";
           const responseData = data.rubrics || { message: "No rubric data returned" };
+          const regradeTextGlobal = data["regrade-request"] || "";
 
           if (typeof responseData === "string") {
             container.innerText = responseData;
           } else {
             for (const [questionLabel, detail] of Object.entries(responseData)) {
-              const questionMatch = questionLabel.match(/(?:Question\s*)(\d+(?:\.\d+)?)/i);
+              const questionMatch = questionLabel.match(/(?:Question\s*)(\d+)/i);
               const questionId = questionMatch ? questionMatch[1] : questionLabel;
 
               const section = document.createElement("div");
@@ -70,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         chrome.tabs.sendMessage(tabs[0].id, {
                           action: "openQuestion",
                           question: questionId,
-                          regradeText: r.comment
+                          regradeText: regradeTextGlobal
                         });
                         statusDiv.innerHTML = `<p>📬 Autofilled regrade for ${questionLabel} - rubric ${idx + 1}</p>`;
                       }
@@ -100,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
                           chrome.tabs.sendMessage(tabs[0].id, {
                             action: "openQuestion",
                             question: questionId,
-                            regradeText: r.comment
+                            regradeText: regradeTextGlobal
                           });
                           statusDiv.innerHTML = `<p>📬 Autofilled regrade for ${questionLabel} - sub ${subQ}</p>`;
                         }

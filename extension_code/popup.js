@@ -1,4 +1,4 @@
-// popup.js (updated version)
+// popup.js (revised: displays individual rubric entries with regrade buttons)
 document.addEventListener('DOMContentLoaded', function () {
   const container = document.getElementById("suggestionsBox");
   const statusDiv = document.getElementById("status");
@@ -42,33 +42,76 @@ document.addEventListener('DOMContentLoaded', function () {
         .then((data) => {
           console.log("✅ Python response:", data);
 
-          // Clear previous content
           container.innerHTML = "";
-
           const responseData = data.rubrics || { message: "No rubric data returned" };
 
           if (typeof responseData === "string") {
             container.innerText = responseData;
           } else {
-            for (const [question, detail] of Object.entries(responseData)) {
-              const section = document.createElement("div");
-              section.innerHTML = `<strong>${question}</strong>`;
+            for (const [questionLabel, detail] of Object.entries(responseData)) {
+              const questionMatch = questionLabel.match(/(?:Question\s*)(\d+(?:\.\d+)?)/i);
+              const questionId = questionMatch ? questionMatch[1] : questionLabel;
 
+              const section = document.createElement("div");
+              section.innerHTML = `<strong>${questionLabel}</strong>`;
+
+              // Render main rubrics with individual regrade buttons
               if (detail.main && detail.main.length > 0) {
-                section.innerHTML += "<br><em>Main:</em><ul>";
-                detail.main.forEach((r) => {
-                  section.innerHTML += `<li>${r.points} — ${r.comment}</li>`;
+                section.innerHTML += "<br><em>Main Rubrics:</em>";
+                const list = document.createElement("ul");
+                detail.main.forEach((r, idx) => {
+                  const item = document.createElement("li");
+                  const btn = document.createElement("button");
+                  btn.textContent = `Request Regrade: ${r.points} pts`;
+                  btn.style.marginLeft = "10px";
+                  btn.onclick = () => {
+                    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                      if (tabs.length > 0) {
+                        chrome.tabs.sendMessage(tabs[0].id, {
+                          action: "openQuestion",
+                          question: questionId,
+                          regradeText: r.comment
+                        });
+                        statusDiv.innerHTML = `<p>📬 Autofilled regrade for ${questionLabel} - rubric ${idx + 1}</p>`;
+                      }
+                    });
+                  };
+                  item.innerHTML = `${r.points} — ${r.comment}`;
+                  item.appendChild(btn);
+                  list.appendChild(item);
                 });
-                section.innerHTML += "</ul>";
+                section.appendChild(list);
               }
 
+              // Render sub rubrics with individual regrade buttons
               if (detail.sub && Object.keys(detail.sub).length > 0) {
                 for (const [subQ, rubrics] of Object.entries(detail.sub)) {
-                  section.innerHTML += `<br><em>Sub ${subQ}:</em><ul>`;
-                  rubrics.forEach((r) => {
-                    section.innerHTML += `<li>${r.points} — ${r.comment}</li>`;
+                  const subLabel = document.createElement("div");
+                  subLabel.innerHTML = `<br><em>Sub ${subQ}:</em>`;
+                  const subList = document.createElement("ul");
+                  rubrics.forEach((r, idx) => {
+                    const subItem = document.createElement("li");
+                    const btn = document.createElement("button");
+                    btn.textContent = `Request Regrade`;
+                    btn.style.marginLeft = "10px";
+                    btn.onclick = () => {
+                      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                        if (tabs.length > 0) {
+                          chrome.tabs.sendMessage(tabs[0].id, {
+                            action: "openQuestion",
+                            question: questionId,
+                            regradeText: r.comment
+                          });
+                          statusDiv.innerHTML = `<p>📬 Autofilled regrade for ${questionLabel} - sub ${subQ}</p>`;
+                        }
+                      });
+                    };
+                    subItem.innerHTML = `${r.points} — ${r.comment}`;
+                    subItem.appendChild(btn);
+                    subList.appendChild(subItem);
                   });
-                  section.innerHTML += "</ul>";
+                  section.appendChild(subLabel);
+                  section.appendChild(subList);
                 }
               }
 
@@ -77,11 +120,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
           }
 
-          statusDiv.innerHTML = "<p style='color: green'> Data loaded!</p>";
+          statusDiv.innerHTML = "<p style='color: green'>✅ Data loaded! Click a rubric to request a regrade.</p>";
         })
         .catch((err) => {
           console.error("❌ Failed to fetch from server:", err);
-          statusDiv.innerHTML = "<p style='color: red'> Failed to connect to backend server.</p>";
+          statusDiv.innerHTML = "<p style='color: red'>❌ Failed to connect to backend server.</p>";
         });
     });
   });

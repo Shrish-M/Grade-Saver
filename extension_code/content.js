@@ -60,7 +60,7 @@ function findQuestionElements(questionNumber) {
   
   for (const element of allElements) {
     // Match various formats - "Question X", "Q X", "Question Number X"
-    if (element.textContent.match(new RegExp(`(Question|Q)\\s*${questionNumber}\\b`, 'i'))) {
+    if (element.textContent.match(new RegExp(`\\b(Question|Q)\\s*${questionNumber}(\\b|[^\\d])`, 'i'))) {
       result.push(element);
     }
   }

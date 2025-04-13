@@ -17,7 +17,7 @@ def return_response():
     # STEP 1: Load Extracted Text from File
     ###############################################
 
-    # TextExtraction.full_extraction_func()
+    TextExtraction.full_extraction_func()
 
     extracted_text_file = "extracted_text2.txt"
     try:

@@ -29,12 +29,15 @@ Grade Saver is a Google Chrome extension for Gradescope that automates regrade r
 
 - **Google Chrome:** For running the extension.
 - **Python 3.7+:** To run the Flask server and required scripts.
-- **Node.js (optional):** For managing web scraping tooling if needed.
+- **Packages:** requests, dotenv, huggingface_hub, PIL, base64, playwright, re, bs4, pymupdf, opencv, flask, flask-cors
 
 ### Setup
 
 1. **Clone the Repository:**
-
    ```bash
    git clone https://github.com/yourusername/gradesaver.git
    cd gradesaver
+   ```
+2. go to ```chrome://extensions/```, turn on developer mode, select load unpacked, and upload the folder named ```extension_code/```
+3. On the local device, run the file named ```server.py```
+4. Open a submission page on gradescope, select the Grade-Saver extension and you're all set!

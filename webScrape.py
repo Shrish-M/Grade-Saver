@@ -213,7 +213,10 @@ def run_main(page_url):
     with open(output_filename, "w", encoding="utf-8") as f:
         json.dump(rubric_by_question, f, indent=4)
     regrade_request = testPromptLlama.return_response()
-    return rubric_by_question, regrade_request
+    start_index = regrade_request.find("Dear Grader")
+    end_index = regrade_request.find("Sincerely")
+    result = regrade_request[start_index:end_index].strip()
+    return rubric_by_question, result
 
 # function to print nested structure (for debugging)
 def printRubrics():

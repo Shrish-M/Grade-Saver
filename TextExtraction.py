@@ -32,6 +32,8 @@ def extract():
 
     print(url)
 
+    link = "https://cdn-lfs-us-1.hf.co/repos/92/d9/92d95e25c44529467a094e86dcbc6ef8151d421b7727182b46e82c0e28dc0e36/8148ef1b30d7a730fb2e6c26e198e46abcbff87312de402e01d9dd469891fc59?response-content-disposition=inline%3B+filename*%3DUTF-8%27%27temp_image.png%3B+filename%3D%22temp_image.png%22%3B&response-content-type=image%2Fpng&Expires=1744542229&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTc0NDU0MjIyOX19LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy11cy0xLmhmLmNvL3JlcG9zLzkyL2Q5LzkyZDk1ZTI1YzQ0NTI5NDY3YTA5NGU4NmRjYmM2ZWY4MTUxZDQyMWI3NzI3MTgyYjQ2ZTgyYzBlMjhkYzBlMzYvODE0OGVmMWIzMGQ3YTczMGZiMmU2YzI2ZTE5OGU0NmFiY2JmZjg3MzEyZGU0MDJlMDFkOWRkNDY5ODkxZmM1OT9yZXNwb25zZS1jb250ZW50LWRpc3Bvc2l0aW9uPSomcmVzcG9uc2UtY29udGVudC10eXBlPSoifV19&Signature=hkncVE27%7E%7E98np9a6oXGiyZEoUwm6yRPxQ5F%7Ep0z2veY2GTmwqHgsHoMiDMgK7Jy0VrF6RyW4MWIhFdrXTlyEgYx-dW33w8Gb3Xo%7ECGR3yW2w7CX4IQjzoVmQOY4sLtsv0pda1IbxjIejdDOQ0hjPzXSO5fpniOuJ9FibD9DSm6obqN7LwRvTs-KJVyyf%7E52zWQuGUurWgBJynqnGRtxQ6Z9MI9Gfe5JtS9WDoBJB%7EfmnSuTIj13CFPNiu26-21vUpX9jkT0dEtgWD9rJ9V%7EKQ4vLU0-p7OERypeC6Ol15u3v3ASjBhgkpQSqFbexxkLWcWVOIKgToJJiXVOIPjSdQ__&Key-Pair-Id=K24J24Z295AEI9"
+
 
     client = InferenceClient(
         provider="hf-inference",
@@ -51,7 +53,7 @@ def extract():
                         {
                                 "type": "image_url",
                                 "image_url": {
-                                    "url": "https://cdn-lfs-us-1.hf.co/repos/92/d9/92d95e25c44529467a094e86dcbc6ef8151d421b7727182b46e82c0e28dc0e36/3dddabd608812d0f80c46ce9372a79501341957bc91b0e51cfe4ac196eb30575?response-content-disposition=inline%3B+filename*%3DUTF-8%27%27temp_image.png%3B+filename%3D%22temp_image.png%22%3B&response-content-type=image%2Fpng&Expires=1744537386&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTc0NDUzNzM4Nn19LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy11cy0xLmhmLmNvL3JlcG9zLzkyL2Q5LzkyZDk1ZTI1YzQ0NTI5NDY3YTA5NGU4NmRjYmM2ZWY4MTUxZDQyMWI3NzI3MTgyYjQ2ZTgyYzBlMjhkYzBlMzYvM2RkZGFiZDYwODgxMmQwZjgwYzQ2Y2U5MzcyYTc5NTAxMzQxOTU3YmM5MWIwZTUxY2ZlNGFjMTk2ZWIzMDU3NT9yZXNwb25zZS1jb250ZW50LWRpc3Bvc2l0aW9uPSomcmVzcG9uc2UtY29udGVudC10eXBlPSoifV19&Signature=OKoM2w9kWibhx13stqmjs84XV-TaN66mGfOhKy8dhwm6A%7EZzoApsO60pPRlcg1iWnPpKSr9XeIdBUSO43AjGGhd%7ESnS8vtvLiPjKWfrvfVwhmZITvW0vEruPaJINNz72AJzUgyuftwI3oD0Aud6-w4LBKVUtCGK7-zcNhtnW4BgRpenMQ5MU0sOweYjemiQmVAGXlNvItcFvkRfz9KGRJes-YGnHd8B%7Ef0jotSC4LDtiuYLFSeW48FF5mcAuaxZF7uOFXBXvM2-k0T27DZw17T7mQEZo5XcGabgBoGjjXPEtZD1bgkIMa5z9b7Lc%7EoKSAPr6WoEQVyWZJYAYE74kPQ__&Key-Pair-Id=K24J24Z295AEI9"
+                                    "url": link
                                  }
                         }
                 ],

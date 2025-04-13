@@ -17,9 +17,9 @@ def return_response():
     # STEP 1: Load Extracted Text from File
     ###############################################
 
-    TextExtraction.full_extraction_func()
+    # TextExtraction.full_extraction_func()
 
-    extracted_text_file = "extracted_text.txt"
+    extracted_text_file = "extracted_text2.txt"
     try:
         with open(extracted_text_file, "r", encoding="utf-8") as f:
             extracted_text = f.read().strip()

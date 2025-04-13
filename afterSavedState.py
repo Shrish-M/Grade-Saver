@@ -56,6 +56,10 @@
 #         for i, r in enumerate(rubrics):
 #             print(f" Rubric {i+1}: {r['points']} — {r['comment']}")
 
+
+# VERSION 2
+
+
 from playwright.sync_api import sync_playwright
 import time
 import re
@@ -72,7 +76,7 @@ with sync_playwright() as p:
 
     # Use one of your Gradescope submission URLs
     #page.goto("https://www.gradescope.com/courses/883458/assignments/5337980/submissions/291925557")
-    page.goto("https://www.gradescope.com/courses/1011178/assignments/5997159/submissions/320691258")
+    page.goto("https://www.gradescope.com/courses/692317/assignments/3987780/submissions/224249480#")
     page.wait_for_selector('.submissionOutlineQuestion--title')
 
     # Get all toggles that (might) represent questions and subquestions.
@@ -126,11 +130,14 @@ with sync_playwright() as p:
             rubric_items = page.query_selector_all('.submissionOutlineRubricItem')
             applied_rubrics = []
 
+
             for item in rubric_items:
+                has_annotation = item.query_selector(".annotationsTally")
                 sr_only = item.query_selector('span.sr-only')
                 # Check for an "applied" rubric item. (Adjust condition if needed.)
                 if sr_only and "unapplied rubric item" in sr_only.inner_text().lower():
-                    continue  # Skip unapplied items.
+                    if not has_annotation:
+                        continue  # Skip unapplied items.
                 # Otherwise, treat this as an applied rubric item.
                 points_el = item.query_selector('[aria-label]')
                 points = points_el.get_attribute('aria-label').strip() if points_el else "No points info"

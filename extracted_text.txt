@@ -1,24 +1,16 @@
 
-ERR
 
-Assumptions:
-File has at least 50 characters
-ERR-ON-OPEN is defined as an integer (-1)
-OK is defined as an integer (0)
 
-int get_characters (char* file_name)
-{
-    char buffer[51];
-    FILE * fp = fopen (file-name, "r");
+```c
+int get_characters (char * file_name) {
+    char buffer[50];
+    fp = fopen (file_name, "r");
     if (fp == NULL)
-        return ERR-ON-OPEN;
-
-    fscanf (fp, "%50c", &buffer[0]);
-    for (int i = 1;
-         if (buffer[i] != ' '))
-    {
+        return ERR_ON_OPEN;
+    fscanf (fp, " %50c", &buffer[0]);
+    for (int i = 49; i >= 0; i--) {
+        if (buffer[i] != '0')
+            printf ("%c", buffer[i]);
     }
-
-fscanf function called
-incorrectly
-Need to pass in the array itself
+}
+```

@@ -8,7 +8,6 @@ import os
 load_dotenv()
 
 hf_token = os.getenv("HF_TOKEN")
-print(hf_token)
 cleaned_image = extractAndCompare.clean_image_final()
 #extractAndCompare.show_image("Cleaned Image", cleaned_image)
 
@@ -29,7 +28,7 @@ print(url)
 
 # client = InferenceClient(
 #     provider="nebius",
-#     api_key="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"
+#     api_key=""
 # )
 #
 # completion = client.chat.completions.create(

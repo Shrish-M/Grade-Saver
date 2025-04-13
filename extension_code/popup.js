@@ -1,122 +1,88 @@
-function openQuestion(questionId, regradeText) {
-  chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-    if (tabs.length === 0) {
-      console.error("No active tab found");
-      return;
-    }
-    
-    // Check if we're on a Gradescope page
-    const url = tabs[0].url;
-    if (!url.includes("gradescope.com")) {
-      document.getElementById("status").innerHTML = 
-        "<p style='color: red'>Please navigate to a Gradescope assignment page first!</p>";
-      return;
-    }
-    
-    // Update status
-    console.log("just before fetching server")
-    fetch('http://localhost:5001/run-scraper', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ url: url })
-    })
-    .then(res => res.json())
-    .then(data => console.log("✅ Sent to server:", data))
-    .catch(err => console.error("❌ Failed to send to server:", err));
-  
-    document.getElementById("status").innerHTML = 
-      `<p>Opening Question ${questionId} and requesting regrade...</p>`;
-    
-    // Send message to content script
-    chrome.tabs.sendMessage(tabs[0].id, {
-      action: "openQuestion",
-      question: questionId,
-      regradeText: regradeText
-    }, response => {
-      if (chrome.runtime.lastError) {
-        console.error("Error sending message:", chrome.runtime.lastError);
-        document.getElementById("status").innerHTML = 
-          `<p style='color: red'>Error: Could not communicate with page. Refresh the page and try again.</p>`;
-      } else if (response && response.success) {
-        document.getElementById("status").innerHTML = 
-          `<p style='color: green'>${response.message}</p>`;
-      } else {
-        document.getElementById("status").innerHTML = 
-          `<p style='color: orange'>${response.message || "Unknown error occurred"}</p>`;
+// popup.js (updated version)
+document.addEventListener('DOMContentLoaded', function () {
+  const container = document.getElementById("suggestionsBox");
+  const statusDiv = document.getElementById("status");
+
+  const runButton = document.createElement("button");
+  runButton.textContent = "Run Gradescope Helper";
+  runButton.style.padding = "10px";
+  runButton.style.marginBottom = "10px";
+  runButton.style.background = "#3366cc";
+  runButton.style.color = "white";
+  runButton.style.border = "none";
+  runButton.style.borderRadius = "6px";
+  runButton.style.cursor = "pointer";
+
+  container.insertBefore(runButton, container.firstChild);
+
+  runButton.addEventListener("click", function () {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs.length === 0) {
+        statusDiv.innerHTML = "<p style='color: red'>No active tab found.</p>";
+        return;
       }
+
+      const url = tabs[0].url;
+      if (!url.includes("gradescope.com")) {
+        statusDiv.innerHTML =
+          "<p style='color: red'>Please navigate to a Gradescope assignment page first!</p>";
+        return;
+      }
+
+      statusDiv.innerHTML = "<p>⏳ Running background Python script...</p>";
+
+      fetch("http://localhost:5001/run-scraper", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url: url }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("✅ Python response:", data);
+
+          // Clear previous content
+          container.innerHTML = "";
+
+          const responseData = data.rubrics || { message: "No rubric data returned" };
+
+          if (typeof responseData === "string") {
+            container.innerText = responseData;
+          } else {
+            for (const [question, detail] of Object.entries(responseData)) {
+              const section = document.createElement("div");
+              section.innerHTML = `<strong>${question}</strong>`;
+
+              if (detail.main && detail.main.length > 0) {
+                section.innerHTML += "<br><em>Main:</em><ul>";
+                detail.main.forEach((r) => {
+                  section.innerHTML += `<li>${r.points} — ${r.comment}</li>`;
+                });
+                section.innerHTML += "</ul>";
+              }
+
+              if (detail.sub && Object.keys(detail.sub).length > 0) {
+                for (const [subQ, rubrics] of Object.entries(detail.sub)) {
+                  section.innerHTML += `<br><em>Sub ${subQ}:</em><ul>`;
+                  rubrics.forEach((r) => {
+                    section.innerHTML += `<li>${r.points} — ${r.comment}</li>`;
+                  });
+                  section.innerHTML += "</ul>";
+                }
+              }
+
+              container.appendChild(section);
+              container.appendChild(document.createElement("hr"));
+            }
+          }
+
+          statusDiv.innerHTML = "<p style='color: green'> Data loaded!</p>";
+        })
+        .catch((err) => {
+          console.error("❌ Failed to fetch from server:", err);
+          statusDiv.innerHTML = "<p style='color: red'> Failed to connect to backend server.</p>";
+        });
     });
   });
-}
-
-// Extract regrade text for a specific question from the full text
-function extractRegradeText(fullText, questionNumber) {
-  // Look for the text after "Q#:" or "Question #:"
-  const pattern = new RegExp(`(?:Q|Question\\s*)${questionNumber}:\\s*([\\s\\S]*?)(?=\\s*(?:Q|Question\\s*)\\d+:|$)`, 'i');
-  const match = fullText.match(pattern);
-  
-  if (match && match[1]) {
-    return match[1].trim();
-  }
-  return "";
-}
-
-// Load and parse the regrade suggestions file
-document.addEventListener('DOMContentLoaded', function() {
-  // Add a status div for feedback
-  const container = document.getElementById("suggestionsBox");
-  const statusDiv = document.createElement("div");
-  statusDiv.id = "status";
-  container.parentNode.insertBefore(statusDiv, container.nextSibling);
-  
-  // Load suggestions if regrade.txt exists
-  fetch(chrome.runtime.getURL("regrade.txt"))
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("Failed to load regrade.txt");
-      }
-      return response.text();
-    })
-    .then(text => {
-      const fullText = text; // Store the full text to extract regrade details later
-      
-      // Look for both Q1: and Question 1: formats
-      const regex = /(?:Q|Question\s*)(\d+):/g;
-      let match;
-      let lastIndex = 0;
-      
-      while ((match = regex.exec(text)) !== null) {
-        if (match.index > lastIndex) {
-          container.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
-        }
-        
-        const questionNum = match[1]; // Extract number
-        const link = document.createElement("a");
-        link.textContent = match[0]; // Keep the original format (Q1: or Question 1:)
-        link.href = "#";
-        link.style.color = "blue";
-        link.style.fontWeight = "bold";
-        
-        // Get the regrade text for this question
-        const regradeText = extractRegradeText(fullText, questionNum);
-        
-        link.onclick = function() {
-          openQuestion(questionNum, regradeText);
-          return false;  // Prevent default action
-        };
-        
-        container.appendChild(link);
-        lastIndex = regex.lastIndex;
-      }
-      
-      if (lastIndex < text.length) {
-        container.appendChild(document.createTextNode(text.slice(lastIndex)));
-      }
-    })
-    .catch(error => {
-      console.error("Error loading suggestions:", error);
-      container.innerHTML = 
-        `<p>No regrade.txt file found or error loading suggestions. Create a regrade.txt file in the extension directory with your regrade suggestions.</p>`;
-    });
 });

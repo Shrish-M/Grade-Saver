@@ -11,8 +11,14 @@ def run_scraper():
     print("✅ Received request to /run-scraper")
     data = request.json
     stored_url = data.get("url")
-    threading.Thread(target=webScrape.run_main, args=(stored_url,)).start()
-    return jsonify({"status": "started"})
+    # threading.Thread(target=webScrape.run_main, args=(stored_url,)).start()
+    result = webScrape.run_main(stored_url)  # Make this return rubric_by_question
+
+    return jsonify({
+        "status": "success",
+        "rubrics": result  # Dictionary expected by the extension
+    })
+    # return jsonify({"status": "started"})
 
 if __name__ == '__main__':
     app.run(port=5001)

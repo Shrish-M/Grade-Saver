@@ -170,16 +170,16 @@ def run_main(page_url):
                         page_count = int(page_count_raw) # Store as integer
                         print(f"Found page count: {page_count}")
                     else:
-                        print("❌ 'page_count' key not found in pdf_attachment.")
+                        print("'page_count' key not found in pdf_attachment.")
                 else:
-                    print("❌ 'pdf_attachment' key not found in JSON props.")
+                    print("'pdf_attachment' key not found in JSON props.")
             else:
-                print("❌ Could not retrieve data-react-props attribute.")
+                print("Could not retrieve data-react-props attribute.")
 
         except json.JSONDecodeError:
-            print("❌ Error decoding JSON data from data-react-props.")
+            print("Error decoding JSON data from data-react-props.")
         except Exception as e:
-            print(f"❌ Could not extract page count: {e}")
+            print(f"Could not extract page count: {e}")
             # page.screenshot(path="error_screenshot_pages.png")
 
 
@@ -202,12 +202,13 @@ def run_main(page_url):
                 file_path = os.path.join(SAVE_DIR, "graded_submission.pdf")
                 with open(file_path, "wb") as f:
                     f.write(response.body())
-                print(f"✅ Downloaded graded PDF to: {file_path}")
+                print(f"Downloaded graded PDF to: {file_path}")
             else:
-                print(f"❌ Failed to download PDF. Status: {response.status}")
+                print(f"Failed to download PDF. Status: {response.status}")
 
     # this part trims the PDF
     trim_pdf("submission_pdfs/graded_submission.pdf", "trimmed_pdfs/trimmed_submission.pdf", page_count)
+    return rubric_by_question
 
 # function to print nested structure (for debugging)
 def printRubrics():

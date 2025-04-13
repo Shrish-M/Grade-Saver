@@ -1,5 +1,5 @@
 # Grade Saver
-
+*Project for Catapult Hacks 2025* <br>
 Grade Saver is a Google Chrome extension for Gradescope that automates regrade requests by extracting rubric details and using AI to generate context-aware requests. This tool streamlines the process of submitting regrade requests, helping you quickly address potential grading errors.
 
 ---

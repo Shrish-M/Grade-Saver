@@ -3,24 +3,31 @@ import json
 import requests
 from dotenv import load_dotenv
 
-# Load environment variables from the .env file
+# Load environment variables from .env file
 load_dotenv()
 
-# Retrieve your API key from the environment
-api_key = os.environ.get("API_KEY")
-if not api_key:
-    raise EnvironmentError("API_KEY environment variable not set! Check your .env file.")
+# Retrieve your Purdue Gen AI Studio API key from the environment.
+genai_api_key = os.environ.get("API_KEY")
+if not genai_api_key:
+    raise EnvironmentError("API_KEY environment variable not set! Please set it in your .env file.")
 
-# Specify the Purdue genAI Studio's OpenAI-compatible endpoint
-endpoint = "https://genai.rcac.purdue.edu/api/chat/completions"
+###############################################
+# STEP 1: Load Extracted Text from File
+###############################################
+extracted_text_file = "extracted_text.txt"
+try:
+    with open(extracted_text_file, "r", encoding="utf-8") as f:
+        extracted_text = f.read().strip()
+except FileNotFoundError:
+    raise FileNotFoundError(f"{extracted_text_file} not found. Ensure your text extraction process has created it.")
 
-# Set up your API headers with the API key
-headers = {
-    "Authorization": f"Bearer {api_key}",
-    "Content-Type": "application/json"
-}
+print("Extracted Text:")
+print(extracted_text)
+print("-" * 80)
 
-# Load the nested rubric data from the JSON file
+###############################################
+# STEP 2: Load and Format Rubric Data
+###############################################
 rubric_file = "rubric_data.json"
 try:
     with open(rubric_file, "r", encoding="utf-8") as f:
@@ -28,114 +35,70 @@ try:
 except FileNotFoundError:
     raise FileNotFoundError(f"{rubric_file} not found. Ensure your extraction script has created it.")
 
-# Build the rubric text to include in the prompt. This version accounts for both main questions and subquestions.
 rubric_text = ""
-# Optionally, sort questions if you prefer a specific order. Otherwise, iterate over the keys directly.
 for question in sorted(rubric_data.keys()):
     rubric_text += f"{question}:\n"
-    # Add main question rubric items, if they exist.
+    # Process main question rubric items
     main_rubrics = rubric_data[question].get("main", [])
     if main_rubrics:
         rubric_text += "  Main Rubric:\n"
         for idx, item in enumerate(main_rubrics, start=1):
-            rubric_text += f"    Rubric {idx}: {item['points']} — {item['comment']}\n"
-    # Add subquestion rubric items if any.
+            if "-" in item["points"]:
+                rubric_text += f"    Rubric {idx}: {item['points']} — {item['comment']}\n"
+    # Process subquestion rubric items
     sub_questions = rubric_data[question].get("sub", {})
     if sub_questions:
         for subq in sorted(sub_questions.keys(), key=lambda x: [int(i) for i in x.split('.')]):
             rubric_text += f"  Subquestion {subq}:\n"
             for idx, item in enumerate(sub_questions[subq], start=1):
-                rubric_text += f"    Rubric {idx}: {item['points']} — {item['comment']}\n"
+                if "-" in item["points"]:
+                    rubric_text += f"    Rubric {idx}: {item['points']} — {item['comment']}\n"
     rubric_text += "\n"
 
-# Define a sample student submission. This could come from another source or be input by a user.
-# student_submission = (
-#     "In my answer, I provided a detailed explanation of the algorithm, including its time complexity and edge-case handling. "
-#     "I believe the clarity and thoroughness of my explanation meet the expectations outlined in the rubric."
-# )
+print("Rubric Text:")
+print(rubric_text)
+print("-" * 80)
 
-
-
-student_submission = """CS 240 - Quiz #1
-
-Name: Shriil Malik
-
-Student ID Number: 00 36141331
-
-ERR_ON
-
-Assumptions:
-
-
-File has at least 50 characters
-
-ERR_ON_OPEN is defined as an integer (-1)
-
-OK is defined as an integer (0)
-
-c
-
-int get_characters (char* file_name) {
-    char buffer[51];
-    FILE *fp = NULL;
-
-    fp = fopen(file_name, "r");
-    if (fp == NULL) {
-        return ERR_ON_OPEN;
-    }
-
-    fscanf(fp, "%50c", &buffer[0]);
-    for (int i = 49; i >= 0; i--) {
-        if ((i % 2) != 0) {
-            printf("%c", buffer[i]);
-        }
-    }
-}
-Annotation:
-
-
-fscanf() function called incorrectly
-
-Need to pass in the array itself
-
-Turn over for additional space...
-
-Page 1/1"""
-
-# Construct the full prompt to send to the genAI Studio API.
-prompt = (
-    "You are an academic writing assistant. A student is preparing a regrade request for a computer science assignment. "
-    "Below is the student's submission along with the detailed grading rubric (including both main questions and subquestions). "
-    "Write a professional, polite, and detailed regrade request that outlines which rubric points might have been overlooked "
-    "and explains how the submission meets the expected criteria.\n\n"
-    "Student Submission:\n"
-    f"{student_submission}\n\n"
-    "Rubric Details:\n"
-    f"{rubric_text}\n"
-    "Regrade Request:"
+###############################################
+# STEP 3: Construct the Regrade Request Prompt
+###############################################
+regrade_prompt = (
+    "You are an academic writing assistant. A student is preparing regrade requests for a computer science assignment. "
+    "Below is the student's submission (extracted from an image) along with the detailed grading rubric. "
+    "For each question where the student lost points (indicated by negative point values in the rubric), generate a separate, "
+    "professional, and polite regrade request. Each regrade request should specify the question (and subquestion if applicable) "
+    "and explain which rubric items might have been overlooked and why the student's submission meets the expected criteria.\n\n"
+    "If the image has fewer questions than in the rubric, then only check the corresponding rubric. Create a regrade request separately for each question.\n\n"
+    "Student Submission (Extracted Text):\n"
+    f"{extracted_text}\n\n"
+    "Rubric Details (only items with point deductions are shown):\n"
+    f"{rubric_text}\n\n"
+    "Regrade Requests (one per question with deductions):"
 )
 
-# Uncomment the next line to print the constructed prompt for debugging purposes.
-# print("Constructed Prompt:\n", prompt)
+###############################################
+# STEP 4: Call Purdue Gen AI Studio API for Regrade Requests
+###############################################
+genai_endpoint = "https://genai.rcac.purdue.edu/api/chat/completions"
 
-# Create the API request body in the OpenAI-compatible format
-body = {
-    "model": "llama3.1:70b-instruct-q4_K_M",  # Update this identifier if necessary
-    "messages": [
-        {"role": "user", "content": prompt}
-    ],
-    "stream": False  # Set to True if a streaming response is desired
+genai_headers = {
+    "Authorization": f"Bearer {genai_api_key}",
+    "Content-Type": "application/json"
 }
 
-# Send the POST request to genAI Studio API
-response = requests.post(endpoint, headers=headers, json=body)
+genai_body = {
+    "model": "llama3.1:70b-instruct-q4_K_M",
+    "messages": [
+        {"role": "user", "content": regrade_prompt}
+    ],
+    "stream": False
+}
 
-# Process the response from the API
+response = requests.post(genai_endpoint, headers=genai_headers, json=genai_body)
 if response.status_code == 200:
     data = response.json()
-    # In an OpenAI-compatible API response, the content from the assistant is in data["choices"][0]["message"]["content"]
-    regrade_request = data["choices"][0]["message"]["content"]
-    print("Generated Regrade Request:\n")
-    print(regrade_request)
+    regrade_requests = data["choices"][0]["message"]["content"].strip()
+    print("\nGenerated Regrade Requests:")
+    print(regrade_requests)
 else:
-    raise Exception(f"Error: {response.status_code}, {response.text}")
+    raise Exception(f"Error from Gen AI Studio API: {response.status_code}, {response.text}")

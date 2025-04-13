@@ -49,10 +49,58 @@ for question in sorted(rubric_data.keys()):
     rubric_text += "\n"
 
 # Define a sample student submission. This could come from another source or be input by a user.
-student_submission = (
-    "In my answer, I provided a detailed explanation of the algorithm, including its time complexity and edge-case handling. "
-    "I believe the clarity and thoroughness of my explanation meet the expectations outlined in the rubric."
-)
+# student_submission = (
+#     "In my answer, I provided a detailed explanation of the algorithm, including its time complexity and edge-case handling. "
+#     "I believe the clarity and thoroughness of my explanation meet the expectations outlined in the rubric."
+# )
+
+
+
+student_submission = """CS 240 - Quiz #1
+
+Name: Shriil Malik
+
+Student ID Number: 00 36141331
+
+ERR_ON
+
+Assumptions:
+
+
+File has at least 50 characters
+
+ERR_ON_OPEN is defined as an integer (-1)
+
+OK is defined as an integer (0)
+
+c
+
+int get_characters (char* file_name) {
+    char buffer[51];
+    FILE *fp = NULL;
+
+    fp = fopen(file_name, "r");
+    if (fp == NULL) {
+        return ERR_ON_OPEN;
+    }
+
+    fscanf(fp, "%50c", &buffer[0]);
+    for (int i = 49; i >= 0; i--) {
+        if ((i % 2) != 0) {
+            printf("%c", buffer[i]);
+        }
+    }
+}
+Annotation:
+
+
+fscanf() function called incorrectly
+
+Need to pass in the array itself
+
+Turn over for additional space...
+
+Page 1/1"""
 
 # Construct the full prompt to send to the genAI Studio API.
 prompt = (
@@ -72,7 +120,7 @@ prompt = (
 
 # Create the API request body in the OpenAI-compatible format
 body = {
-    "model": "llama3.1:latest",  # Update this identifier if necessary
+    "model": "llama3.1:70b-instruct-q4_K_M",  # Update this identifier if necessary
     "messages": [
         {"role": "user", "content": prompt}
     ],

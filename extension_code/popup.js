@@ -14,6 +14,18 @@ function openQuestion(questionId, regradeText) {
     }
     
     // Update status
+    console.log("just before fetching server")
+    fetch('http://localhost:5001/run-scraper', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ url: url })
+    })
+    .then(res => res.json())
+    .then(data => console.log("✅ Sent to server:", data))
+    .catch(err => console.error("❌ Failed to send to server:", err));
+  
     document.getElementById("status").innerHTML = 
       `<p>Opening Question ${questionId} and requesting regrade...</p>`;
     

@@ -7,7 +7,10 @@ import json
 import fitz
 
 SAVE_DIR = "submission_pdfs"
+TRIM_DIR = "trimmed_pdfs"
 os.makedirs(SAVE_DIR, exist_ok=True)
+os.makedirs(TRIM_DIR, exist_ok=True)
+rubric_by_question = {}
 
 def trim_pdf(input_path, output_path, desired_page_count):
     doc = fitz.open(input_path)
@@ -30,48 +33,8 @@ def trim_pdf(input_path, output_path, desired_page_count):
     new_doc.save(output_path)
     print(f"✅ Trimmed PDF saved as: {output_path}")
 
-# function to print nested structure (for debugging)
-def printRubrics():
-    for main_q, data in rubric_by_question.items():
-        print(f"\n{main_q}:")
-        if data["main"]:
-            print("  Main Rubric:")
-            for idx, r in enumerate(data["main"]):
-                print(f"    Rubric {idx+1}: {r['points']} — {r['comment']}")
-        if data["sub"]:
-            for sub_q, rubrics in data["sub"].items():
-                print(f"  Subquestion {sub_q}:")
-                for idx, r in enumerate(rubrics):
-                    print(f"    Rubric {idx+1}: {r['points']} — {r['comment']}")
-    # Write the aggregated rubric data to a JSON file for later use.
-    output_filename = "rubric_data.json"
-    with open(output_filename, "w", encoding="utf-8") as f:
-        json.dump(rubric_by_question, f, indent=4)
-
-    print(f"\nRubric data successfully written to {output_filename}")
-
-def trim_pdf(input_path, output_path, desired_page_count):
-    doc = fitz.open(input_path)
-    total_pages = len(doc)
-
-    if desired_page_count >= total_pages:
-        print("✅ No need to trim — already within page limit.")
-        doc.save(output_path)
-        return
-
-    # Calculate how many to remove from the front
-    pages_to_remove = total_pages - desired_page_count
-    print(f"📄 Total pages: {total_pages}, trimming first {pages_to_remove} pages...")
-
-    # Create a new PDF with only the last `desired_page_count` pages
-    new_doc = fitz.open()
-    for i in range(pages_to_remove, total_pages):
-        new_doc.insert_pdf(doc, from_page=i, to_page=i)
-
-    new_doc.save(output_path)
-    print(f"✅ Trimmed PDF saved as: {output_path}")
-
-def run_main():
+def run_main(page_url):
+    print("main called")
     if not os.path.exists("auth.json"):
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=False)
@@ -93,7 +56,6 @@ def run_main():
 
     # this part extracts the rubrics where student went wrong
     # Dictionary to store rubric data grouped by main question and subquestions
-    rubric_by_question = {}
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)
@@ -102,7 +64,7 @@ def run_main():
 
         # Use one of your Gradescope submission URLs
         #page.goto("https://www.gradescope.com/courses/883458/assignments/5337980/submissions/291925557")
-        page.goto("https://www.gradescope.com/courses/1011178/assignments/5997159/submissions/320673965#")
+        page.goto(page_url)
         page.wait_for_selector('.submissionOutlineQuestion--title')
 
         # Get all toggles that (might) represent questions and subquestions.
@@ -247,3 +209,22 @@ def run_main():
     # this part trims the PDF
     trim_pdf("submission_pdfs/graded_submission.pdf", "trimmed_pdfs/trimmed_submission.pdf", page_count)
 
+# function to print nested structure (for debugging)
+def printRubrics():
+    for main_q, data in rubric_by_question.items():
+        print(f"\n{main_q}:")
+        if data["main"]:
+            print("  Main Rubric:")
+            for idx, r in enumerate(data["main"]):
+                print(f"    Rubric {idx+1}: {r['points']} — {r['comment']}")
+        if data["sub"]:
+            for sub_q, rubrics in data["sub"].items():
+                print(f"  Subquestion {sub_q}:")
+                for idx, r in enumerate(rubrics):
+                    print(f"    Rubric {idx+1}: {r['points']} — {r['comment']}")
+    # Write the aggregated rubric data to a JSON file for later use.
+    output_filename = "rubric_data.json"
+    with open(output_filename, "w", encoding="utf-8") as f:
+        json.dump(rubric_by_question, f, indent=4)
+
+    print(f"\nRubric data successfully written to {output_filename}")

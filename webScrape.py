@@ -208,6 +208,9 @@ def run_main(page_url):
 
     # this part trims the PDF
     trim_pdf("submission_pdfs/graded_submission.pdf", "trimmed_pdfs/trimmed_submission.pdf", page_count)
+    output_filename = "rubric_data.json"
+    with open(output_filename, "w", encoding="utf-8") as f:
+        json.dump(rubric_by_question, f, indent=4)
     return rubric_by_question
 
 # function to print nested structure (for debugging)

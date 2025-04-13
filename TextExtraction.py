@@ -46,18 +46,18 @@ def extract():
                 "content": [
                         {
                                 "type": "text",
-                                "text": "Please extract text from this image, ignore background noise, please carefully and correctly extract squished text as well and text from annotations (boxes pointing to text). Don't include a concluding message or any lines containing student name or ID"
+                                "text": "Please extract text from this image (note that handwriting may be in cursive), ignore background noise, please carefully and correctly extract squished text as well and text from annotations (boxes pointing to text). Label the annotations separately as well. Don't include a concluding message or any lines containing student name or ID"
                         },
                         {
                                 "type": "image_url",
                                 "image_url": {
-                                    "url": "https://cdn-lfs-us-1.hf.co/repos/92/d9/92d95e25c44529467a094e86dcbc6ef8151d421b7727182b46e82c0e28dc0e36/3dddabd608812d0f80c46ce9372a79501341957bc91b0e51cfe4ac196eb30575?response-content-disposition=inline%3B+filename*%3DUTF-8%27%27temp_image.png%3B+filename%3D%22temp_image.png%22%3B&response-content-type=image%2Fpng&Expires=1744534257&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTc0NDUzNDI1N319LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy11cy0xLmhmLmNvL3JlcG9zLzkyL2Q5LzkyZDk1ZTI1YzQ0NTI5NDY3YTA5NGU4NmRjYmM2ZWY4MTUxZDQyMWI3NzI3MTgyYjQ2ZTgyYzBlMjhkYzBlMzYvM2RkZGFiZDYwODgxMmQwZjgwYzQ2Y2U5MzcyYTc5NTAxMzQxOTU3YmM5MWIwZTUxY2ZlNGFjMTk2ZWIzMDU3NT9yZXNwb25zZS1jb250ZW50LWRpc3Bvc2l0aW9uPSomcmVzcG9uc2UtY29udGVudC10eXBlPSoifV19&Signature=fMwANlGBxijV2wndEK3MOfZmvwpLuwWEJWAwZpHoBYe8Q8EiE5zUrcwAU5K4MQvbnDkX4iSdmk56KL2i%7ELLOFNCHonU6cFaxxJcXYN9zSQvHXSNkV2QxW5e9fNZqr9cnJADnxRO2MBhhxuFNH-NKR5YmkRQr3jY0PEPMqdvXVMOnlOHgUegRZAmfMO51z2z3OMTMuRZxsKixI7pTPNlNCpDvspY6pyvMcWzAgFPaw1MNSTj2Jrk%7E0KbGceiAE0GqDBSPDyRL7PYKD-X0pQ%7E7QTRfhkaZwp9PrbLJkgGqHv4%7EaAbRawUy4u3qB38pfwPULAQvTYHBxIGgvLhKNBZw-g__&Key-Pair-Id=K24J24Z295AEI9"
+                                    "url": "https://cdn-lfs-us-1.hf.co/repos/92/d9/92d95e25c44529467a094e86dcbc6ef8151d421b7727182b46e82c0e28dc0e36/3dddabd608812d0f80c46ce9372a79501341957bc91b0e51cfe4ac196eb30575?response-content-disposition=inline%3B+filename*%3DUTF-8%27%27temp_image.png%3B+filename%3D%22temp_image.png%22%3B&response-content-type=image%2Fpng&Expires=1744537386&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTc0NDUzNzM4Nn19LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2RuLWxmcy11cy0xLmhmLmNvL3JlcG9zLzkyL2Q5LzkyZDk1ZTI1YzQ0NTI5NDY3YTA5NGU4NmRjYmM2ZWY4MTUxZDQyMWI3NzI3MTgyYjQ2ZTgyYzBlMjhkYzBlMzYvM2RkZGFiZDYwODgxMmQwZjgwYzQ2Y2U5MzcyYTc5NTAxMzQxOTU3YmM5MWIwZTUxY2ZlNGFjMTk2ZWIzMDU3NT9yZXNwb25zZS1jb250ZW50LWRpc3Bvc2l0aW9uPSomcmVzcG9uc2UtY29udGVudC10eXBlPSoifV19&Signature=OKoM2w9kWibhx13stqmjs84XV-TaN66mGfOhKy8dhwm6A%7EZzoApsO60pPRlcg1iWnPpKSr9XeIdBUSO43AjGGhd%7ESnS8vtvLiPjKWfrvfVwhmZITvW0vEruPaJINNz72AJzUgyuftwI3oD0Aud6-w4LBKVUtCGK7-zcNhtnW4BgRpenMQ5MU0sOweYjemiQmVAGXlNvItcFvkRfz9KGRJes-YGnHd8B%7Ef0jotSC4LDtiuYLFSeW48FF5mcAuaxZF7uOFXBXvM2-k0T27DZw17T7mQEZo5XcGabgBoGjjXPEtZD1bgkIMa5z9b7Lc%7EoKSAPr6WoEQVyWZJYAYE74kPQ__&Key-Pair-Id=K24J24Z295AEI9"
                                  }
                         }
                 ],
             }
         ],
-        max_tokens=512,
+        max_tokens=1000,
     )
     print("Hello")
     print(completion.choices[0].message["content"])
@@ -77,6 +77,10 @@ def clean():
 
     with open(file_path, 'w') as f:
         f.writelines(filtered_lines)
+
+def full_extraction_func():
+    extract()
+    clean()
 
 if __name__ == "__main__":
     extract()
